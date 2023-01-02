@@ -152,12 +152,20 @@ public class Model extends Observable {
 
 
     //
-    private void moveUp(Tile tile) {
-        if (_board.tile(tile.col(), tile.row() + 1) != null && tile.row() + 1 > 3) {
-            System.out.println("Moved to the top");
-        } else {
-            moveUp(tile);
+    private boolean moveUp(Tile tile) {
+        int col = tile.col();
+        int row = tile.row() + 1;
+        if (row > 3) {
+            return false;
         }
+        if (col > size()) {
+            return false;
+        }
+        if (_board.tile(col, row) == null) {
+            _board.move(col, row, tile);
+            moveUp(_board.tile(col, row));
+            return true;
+        } else return false;
     }
 
     public void tilt(Side side) {
@@ -165,7 +173,7 @@ public class Model extends Observable {
         for (int c = 0; c < _board.size(); c++) {
             for (int r = 0; r < _board.size(); r++) {
                 if (_board.tile(c, r) != null) {
-
+                    moveUp(_board.tile(c, r));
                 }
             }
         }
